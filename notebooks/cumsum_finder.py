@@ -8,7 +8,8 @@ def normal_likelihood(value, mean_0, mean_8, std):
 
 class MeanExp():
     
-    def __init__(self, alpha, beta, mean_diff, trsh=2, breaks_max=5, norm_max=5):
+    def __init__(self, alpha, beta, mean_diff, trsh=2, breaks_max=5,
+                slice_length=15):
         
         self.mean_hat = 0
         self.std_hat = 1
@@ -17,14 +18,19 @@ class MeanExp():
         self.beta = beta
         
         self.metric = 0
-        self.mean_diff = mean_diff 
         
-        self.break_counts = 0
+        # ГИПЕРПАРАМЕТР: дельта для альтернативный гипотезы
+        self.mean_diff = mean_diff 
+        # ГИПЕРПАРАМЕТР: порог для критерия
         self.trsh = trsh
+        # ГИПЕРПАРАМЕТРЫ: макс. число разладок для принятия мер
         self.breaks_max = breaks_max
-        self.norm_max = norm_max
+        
+        self.states = []
         self.breakpoints = []
-
+        # ГИПЕРПАРАМЕТР: глубина среза значений метрики
+        self.slice_length = slice_length
+        self.colors=['blue', 'red']
         
     def get_values(self):
         # оцениваем mean и std^2
@@ -64,11 +70,15 @@ class MeanExp():
         # проверка гипотезы о том, что среднее действительно = 0, с учётом того, что std = 1
         zeta_k = normal_likelihood(self.new_value_normalized, self.mean_diff, 0., 1)
         self.metric = max(0, self.metric + zeta_k)
-        
-        if self.metric > self.trsh:
-            self.break_counts += 1
 
-        if self.break_counts > self.breaks_max:
-            self.breakpoints.append('red')
+        if self.metric > self.trsh:            
+            self.states.append('red')
         else:
-            self.breakpoints.append('blue')
+            self.states.append('blue')
+            
+        if (np.array(self.states[-self.slice_length:]) == 'red').sum() > self.breaks_max:
+            self.breakpoints.append(1)
+        else:
+            self.breakpoints.append(0)
+            
+            
