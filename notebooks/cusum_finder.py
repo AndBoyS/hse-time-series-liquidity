@@ -6,7 +6,7 @@ def normal_likelihood(value, mean_0, mean_8, std):
     return np.log(norm.pdf(value, mean_0, std) / 
                   norm.pdf(value, mean_8, std))
 
-class MeanExp():
+class CusumFinder():
     
     def __init__(self, alpha, beta, mean_diff, trsh=2, breaks_max=5,
                 slice_length=15):
@@ -72,13 +72,12 @@ class MeanExp():
         self.metric = max(0, self.metric + zeta_k)
 
         if self.metric > self.trsh:            
-            self.states.append('red')
+            self.states.append(1)
         else:
-            self.states.append('blue')
+            self.states.append(0)
             
-        if (np.array(self.states[-self.slice_length:]) == 'red').sum() > self.breaks_max:
-            self.breakpoints.append(1)
+        if (np.array(self.states[-self.slice_length:]) == 1).sum() > self.breaks_max:
+            self.breakpoints.append('red')
         else:
-            self.breakpoints.append(0)
-            
+            self.breakpoints.append('blue')
             
