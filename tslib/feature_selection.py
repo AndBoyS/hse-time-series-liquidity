@@ -1,4 +1,9 @@
+from copy import deepcopy
 import numpy as np
+import pandas as pd
+from sklearn.pipeline import Pipeline
+from sklearn.feature_selection import SequentialFeatureSelector
+from sklearn.model_selection import TimeSeriesSplit
 
 
 def get_best_cfs_features(df, features, target):
@@ -53,3 +58,27 @@ def get_cfs(df, subset, label):
     rff = corr.unstack().mean()
 
     return (k * rcf) / (k + k * (k-1) * rff) ** 0.5
+
+
+def fit_default_model(model, X, y):
+    model = deepcopy(model)
+    model.fit(X, y)
+    return model, X.columns
+
+
+def fit_sfs_model(model, X, y, n_splits=5):
+
+    sfs = SequentialFeatureSelector(model, cv=TimeSeriesSplit(n_splits))
+    model = Pipeline([('selection', sfs),
+                      ('classifier', model)])
+
+    model.fit(X, y)
+    return model, X.columns
+
+
+def fit_cfs_model(model, X, y):
+    Xy = pd.concat((X, pd.DataFrame(y)), axis=1)
+    features, _ = get_best_cfs_features(Xy, list(X.columns), y.name)
+    model = deepcopy(model)
+    model.fit(X[features], y)
+    return model, features

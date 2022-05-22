@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def calculate_profit(trues, preds, day_deposit_rate, night_deposit_rate, night_loan_rate):
+def get_score(trues, preds, day_deposit_rate, night_deposit_rate, night_loan_rate, return_all_values=False):
 
     trues = trues.copy()
     profit = np.zeros(trues.shape)
@@ -23,4 +23,7 @@ def calculate_profit(trues, preds, day_deposit_rate, night_deposit_rate, night_l
     # Если есть дефицит, занимаем
     profit[~positive_balance_mask] += night_loan_rate * trues[~positive_balance_mask]
 
-    return profit
+    if return_all_values:
+        return profit
+    else:
+        return profit.sum()
