@@ -5,7 +5,7 @@ def get_best_cfs_features(df, features, target):
     '''
     Нахождение лучшего сабсета признаков на основе CFS - Correlation-based Feature Selection.
     По сути ищем признаки, сильно коррелирующие с таргетом, и слабо коррелирубщие между собой.
-    Для нахождение сабсета используется жадный алгоритм, аналогичный sklearn.feature_selection.SequentialFeatureSelector с direction='forward'
+    Для нахождение сабсета используется жадный алгоритм, аналогичный sklearn.feature_selection.SequentialFeatureSelector с direction='forward', но без кросс-валидации
     '''
 
     features_left = features.copy()
