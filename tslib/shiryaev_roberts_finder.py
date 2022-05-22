@@ -1,12 +1,8 @@
 import numpy as np
 from scipy.stats import norm
 
-# грубо говоря, критерий Неймана-Пирсона для среднего
-def normal_likelihood(value, mean_0, mean_8, std):
-    return np.log(norm.pdf(value, mean_0, std) / 
-                  norm.pdf(value, mean_8, std))
 
-class CusumFinder():
+class SRFinder():
     
     def __init__(self, alpha, beta, sigma_diff, ceil = 1e6, trsh=2, breaks_max=5,
                 slice_length=15):
@@ -77,13 +73,12 @@ class CusumFinder():
         likelihood = np.exp(self.sigma_diff * (adjusted_value - self.sigma_diff / 2.))
         self.metric = min(self.ceil, (1. + self.metric) * likelihood)
         
-
-#         if self.metric > self.trsh:            
-#             self.states.append(1)
-#         else:
-#             self.states.append(0)
+        if self.metric > self.trsh:            
+            self.states.append(1)
+        else:
+            self.states.append(0)
             
-#         if (np.array(self.states[-self.slice_length:]) == 1).sum() > self.breaks_max:
-#             self.breakpoints.append('red')
-#         else:
-#             self.breakpoints.append('blue')
+        if (np.array(self.states[-self.slice_length:]) == 1).sum() > self.breaks_max:
+            self.breakpoints.append('red')
+        else:
+            self.breakpoints.append('blue')
