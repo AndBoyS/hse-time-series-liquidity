@@ -1,8 +1,19 @@
 import numpy as np
 import pandas as pd
+from sklearn.metrics import make_scorer
+
+key_rate = 0.07
+day_deposit_rate = key_rate + 0.5 / 100
+night_deposit_rate = key_rate - 0.9 / 100
+night_loan_rate = key_rate + 1 / 100
 
 
-def get_score(trues, preds, day_deposit_rate, night_deposit_rate, night_loan_rate, return_all_values=False):
+def get_score(trues,
+              preds,
+              day_deposit_rate=day_deposit_rate,
+              night_deposit_rate=night_deposit_rate,
+              night_loan_rate=night_loan_rate,
+              return_all_values=False):
 
     trues = trues.copy()
     profit = np.zeros(trues.shape)
@@ -27,3 +38,6 @@ def get_score(trues, preds, day_deposit_rate, night_deposit_rate, night_loan_rat
         return profit
     else:
         return profit.sum()
+
+
+get_score_estimator = make_scorer(get_score)
