@@ -66,9 +66,9 @@ def fit_default_model(model, X, y):
     return model, X.columns
 
 
-def fit_sfs_model(model, X, y, n_splits=5):
+def fit_sfs_model(model, X, y, n_splits=3):
 
-    sfs = SequentialFeatureSelector(model, cv=TimeSeriesSplit(n_splits))
+    sfs = SequentialFeatureSelector(model, cv=TimeSeriesSplit(n_splits), n_features_to_select=15, n_jobs=-1)
     model = Pipeline([('selection', sfs),
                       ('classifier', model)])
 
